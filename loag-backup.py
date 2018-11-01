@@ -5,7 +5,8 @@ Script developed to filter backed up log fiels for modules and push them in to A
 
 import os
 import sys
-import time 
+import time
+import boto3 
 
 def upload_backup_s3(backupFile, s3Bucket, bucket_directory, file_format):
     s3 = boto3.resource('s3')
