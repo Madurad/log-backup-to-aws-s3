@@ -17,7 +17,21 @@ def upload_backup_s3(backupFile, s3Bucket, bucket_directory, file_format):
         print ('An error occured')
         pass
 
-#def remove_older_files()
+def remove(path):
+    """
+    Remove the file or directory which has a older log files after S3 uploads.
+    """
+    if os.path.isdir(path):
+        try:
+            os.rmdir(path)
+        except OSError:
+            print "Unable to remove folder: %s" % path
+    else:
+        try:
+            if os.path.exists(path):
+                os.remove(path)
+        except OSError:
+            print "Unable to remove file: %s" % path
 
 def filter_logfiles_to_clean(days_to_filter, path):
     time_calculated = time.time() - (days_to_filter - 86400)
@@ -26,8 +40,12 @@ def filter_logfiles_to_clean(days_to_filter, path):
             full_path = os.path.join(root, file_)
             stat = os.stat(full_path)
             if stat.st_mtime <= time_calculated:
-                #print(file_)
-                upload_backup_s3(full_path, 'inc-log-backup','pfsense/{}', file_)
+                try:
+                    upload_backup_s3(full_path, 'inc-log-backup','pfsense/{}', file_) is True:
+                    remove(full_path)
+                except:
+                    print('delete failed !!')
     pass
 
-filter_logfiles_to_clean(30, '/opt/ALLMODULESLOG/email-bounce-manager/')
+if __name__ == "__main__":
+    filter_logfiles_to_clean(30, '/opt/ALLMODULESLOG/email-bounce-manager/')
